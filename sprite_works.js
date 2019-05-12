@@ -1,95 +1,55 @@
-let global = {};
-const sw = global;
-// 32x32 characters
-/*
+// THIS IS ESSENTIALLY THE INDEX.JS The LAUNCH POINT.  
 
-class character {
-    constructor (x = 0,y = 0,frame = 0) {
-        this.x = x;
-        this.y = y;
-        this.frame = frame;
-    }
-}
+// 'global' object for managing everything.
+let global = {
+    raw_scale: 32,
+    draw_scale: 512 / 2,
+    ctx: undefined,
+    canvas: undefined,
+    spritesheet: undefined,
+    skelement: undefined,
+};
 
-*/
+let height = document.documentElement.clientHeight - 16;
+let width = document.documentElement.clientWidth - 16;
+var min_size = height < width ? height : width;
 
+// this centering data is just for inhouse use.
+let centerSCR = {};
+centerSCR.x = min_size / 2.5;
+//centerSCR.y = min_size / 2.5;
+centerSCR.y = min_size / 1.5;
+//console.log(centerSCR);
 
-let madude = {
-    x: 90,
-    y: 40,
-}
-
-class skunk_works {
-    constructor(h = '128px', w = '128px', bg = 'green', border = '2px solid gold') {
-        console.log('skunk_works - constructor');
-        let display = document.createElement('canvas');
-        display.id = 'sprite_works';
-        document.body.appendChild(display);
-        global.canvas = document.getElementById('sprite_works');
-        let style = document.getElementById('sprite_works').style;
-        style.position = 'absolute';
-        style.display = 'block';
-        style.height = '128px';
-        style.height = h;
-        style.width = w;
-        style.background = bg;
-        style.border = border;
-        style.margin = 'auto';
-        style.left = '0';
-        style.right = '0';
-        style.top = '100px';
-        global.ctx = document.getElementById('sprite_works').getContext('2d');
-    }
-}
-
-
-
-
-
-let screen = new skunk_works('256px','256px','blue', '2px solid red');
-
-
-
-sw.ctx.imageSmoothingEnabled = false;
-
-function loadSpriteSheet() {
-    const image = new Image(32, 32); // Using optional size for image
-    image.onload = setspritesheet; // Draw when image has loaded
-    // Load an image of intrinsic size 300x227 in CSS pixels
-    image.src = '/run.png'
-}
-
-function setspritesheet() {
-    //  global.ctx.drawImage(this, 0, 32, 32, 32, 0, 0, 128, 64);
-    global.spirtesheet = this;
-}
-
-
-
+global.skelement = new skelement();
+global.ctx.imageSmoothingEnabled = false;
+// load the images:
 loadSpriteSheet();
-//console.log(sw);
+// draw the initial background:
+draw_gradient_top2bot('skyblue', 'white', 'green');
+
+// push characters to a dudes array.
+let dudes = [];
+dudes.push(new Prisoner(centerSCR.x, centerSCR.y, 'bob'));
+global.controller = new web_controls(dudes[0]);
+dudes.push(new Prisoner(1, centerSCR.y, 'dale'));
+//global.controllerB = new web_controls(dudes[1]);
+dudes.push(new Prisoner(256, centerSCR.y+64, 'jeff'));
+dudes.push(new Prisoner(662, centerSCR.y+50, 'hammy', true));
+//NOTES: greatest Y value (inverted remember) = drawn last = infront.
 
 
 
-function animate(frame, row) {
-    global.ctx.clearRect(0 + madude.x, 0 + madude.y, 128, 64);
-    global.ctx.drawImage(global.spirtesheet, frame * 32, row * 32, 32, 32, 0 + madude.x, 0 + madude.y, 128, 64);
-}
+setTimeout(function () {
+    //pause/timeout for load::
+    dudes.forEach(function (baddude) {
+        baddude.ctx = global.ctx;
+    });
+    let animationLoop = setInterval(function () {
+        draw_gradient_top2bot('skyblue', 'white', 'green');
+        dudes.forEach(function (baddude) {
+            baddude.tick();
+        });
+    }, 1000 / 12);
 
-let frame = 0;
-let row = 0;
-
-let gear_driver = setInterval(function () {
-
-    animate(frame, row);
-    frame++;
-    if (frame > 3) {
-        frame = 0;
-        row++;
-    }
-
-    if (row > 2) {
-        row = 0;
-    }
-
-}, 200);
+}, 500);
