@@ -66,7 +66,7 @@ class Prisoner {
 
         //unused dudes name:
         this.id = id;
-        this.noisescale = 32;
+        this.noisescale = 32/4;
         this.noisevol = 2;
         this.noiselast = 0;
         this.isNoisy = true;
