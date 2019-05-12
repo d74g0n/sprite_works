@@ -1,5 +1,14 @@
 // THIS IS ESSENTIALLY THE INDEX.JS The LAUNCH POINT.  
 
+/*
+ NOTES:
+create buffer let buffer = create (unppended?) canvas
+draw everything to buffer before drawing to draw canvas.
+
+https://stackoverflow.com/questions/2688961/how-do-i-tint-an-image-with-html5-canvas
+
+*/
+
 // 'global' object for managing everything.
 let global = {
     raw_scale: 32,
@@ -32,12 +41,14 @@ draw_gradient_top2bot('skyblue', 'white', 'green');
 let dudes = [];
 dudes.push(new Prisoner(centerSCR.x, centerSCR.y, 'bob'));
 global.controller = new web_controls(dudes[0]);
-dudes.push(new Prisoner(1, centerSCR.y, 'dale'));
+//dudes.push(new Prisoner(1, centerSCR.y, 'dale'));
 //global.controllerB = new web_controls(dudes[1]);
-dudes.push(new Prisoner(256, centerSCR.y+64, 'jeff'));
-dudes.push(new Prisoner(662, centerSCR.y+50, 'hammy', true));
+//dudes.push(new Prisoner(256, centerSCR.y+64, 'jeff'));
+//dudes.push(new Prisoner(662, centerSCR.y+50, 'hammy', true));
 //NOTES: greatest Y value (inverted remember) = drawn last = infront.
 
+
+//check control states etc then apply velocities
 
 
 setTimeout(function () {
@@ -45,11 +56,31 @@ setTimeout(function () {
     dudes.forEach(function (baddude) {
         baddude.ctx = global.ctx;
     });
+
+    global.framecount = 1;
+
     let animationLoop = setInterval(function () {
+        if (global.framecount > 60) {
+            global.framecount = 1;
+        }
         draw_gradient_top2bot('skyblue', 'white', 'green');
-        dudes.forEach(function (baddude) {
-            baddude.tick();
-        });
-    }, 1000 / 12);
+
+
+
+
+        if (global.framecount % 2 == 0) {
+            dudes.forEach(function (baddude) {
+                baddude.tick();
+            });
+        } else {
+            dudes.forEach(function (baddude) {
+                baddude.move();
+                baddude.draw_body();
+
+            });
+        }
+        global.framecount++;
+
+    }, 1000 / 30);
 
 }, 500);

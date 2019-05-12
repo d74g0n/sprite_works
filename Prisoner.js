@@ -3,84 +3,82 @@ class Prisoner {
         //screen coordinates to draw topleft corner.
         this.x = x;
         this.y = y;
-
         //velocity:
         this.vx = 0;
         this.vy = 0;
         this.vcap = 90;
-
+        this.vmin = 0.95;
         this.isJumping = false;
-        //TMP
-        this.ground = this.y;
-
-        this.jumppwr = 140;
+        this.ground = this.y; // TODO
+        this.jumppwr = 50;
         // probably should be global?
-        this.fric = 0.8;
-        this.speed = 10;
-
-        this.friction = function () {
-            this.vx = this.vx * this.fric;
-            this.vy = this.vy * this.fric;
+        this.friction = 0.8;
+        this.speed = 15;
+        this.applyfriction = function () {
+            if (!this.isJumping) {
+                this.vx = this.vx * this.friction;
+                this.vy = this.vy * this.friction;
+            }
         }
-
         this.move = function () {
             this.capvelocity();
             this.x += this.vx;
             this.y += this.vy;
-            this.friction();
-            this.gravity();
+            this.applyfriction();
+            this.applygravity();
         }
-
         this.capvelocity = function () {
             if (this.vx > this.vcap) {
                 this.vx = this.vcap;
             }
-
             if (this.vx < -this.vcap) {
                 this.vx = -this.vcap;
             }
             if (this.vy > this.vcap) {
-                //                this.vy = this.vcap;
+                // this.vy = this.vcap;
             }
-
             if (this.vy < -this.vcap) {
                 this.vy = -this.vcap;
             }
-
-            
-            if (this.vx < 0.5 && this.vx > 0) {
+            if (this.vx < this.vmin && this.vx > 0) {
                 this.vx = 0;
             }
-            
-            if (this.vx > -0.5 && this.vx < 0) {
+            if (this.vx > -this.vmin && this.vx < 0) {
                 this.vx = 0;
             }
-            
-            
-            
         }
+        this.gravity = 2;
+        this.gravitySpeed = 0;
+        this.applygravity = function () {
+            this.gravitySpeed += this.gravity;
 
-        this.gravity = function () {
             if (this.y < this.ground) {
-                this.vy = this.vy + 19;
+                this.vy += this.gravitySpeed;
             }
 
             if (this.y >= this.ground) {
                 this.vy = 0;
                 this.isJumping = false;
                 this.y = this.ground;
+                this.gravitySpeed = 0;
             }
         }
 
         //unused dudes name:
         this.id = id;
         this.noisescale = 32;
-        this.noisevol = 5;
-        this.isNoisy = false;
+        this.noisevol = 2;
+        this.noiselast = 0;
+        this.isNoisy = true;
 
         this.noise = function () {
             if (this.isNoisy) {
-                return Math.random(this.noisevol).toFixed(4) * this.noisescale;
+                
+                if (global.framecount % 10 == 0) {
+                this.noiselast = Math.random(this.noisevol).toFixed(4) * this.noisescale;
+                }
+                
+                return this.noiselast;
             } else {
                 return 0;
             }
@@ -112,9 +110,9 @@ class Prisoner {
 
             if (this.vx == 0 && this.vy == 0) {
                 //idle pose:
-                this.ctx.drawImage(global.spirtesheet, 5 * global.raw_scale, 0 * global.raw_scale, global.raw_scale, global.raw_scale, x-8, y, global.draw_scale, global.draw_scale);     
-                
-                this.ctx.drawImage(global.spirtesheet, 5 * global.raw_scale, 0 * global.raw_scale, global.raw_scale, global.raw_scale, x+16, y, global.draw_scale-62, global.draw_scale);
+                this.ctx.drawImage(global.spirtesheet, 5 * global.raw_scale, 0 * global.raw_scale, global.raw_scale, global.raw_scale, x - 8, y, global.draw_scale, global.draw_scale);
+
+                this.ctx.drawImage(global.spirtesheet, 5 * global.raw_scale, 0 * global.raw_scale, global.raw_scale, global.raw_scale, x + 16, y, global.draw_scale - 62, global.draw_scale);
             } else {
                 //walking cycle:
                 this.ctx.drawImage(global.spirtesheet, this.frame * global.raw_scale, 0 * global.raw_scale, global.raw_scale, global.raw_scale, x, y, global.draw_scale, global.draw_scale);
@@ -122,7 +120,7 @@ class Prisoner {
         }
 
         this.draw_shirt = function (x, y) {
-            this.ctx.drawImage(global.spirtesheet, 0 * global.raw_scale, 0 * global.raw_scale, global.raw_scale, global.raw_scale, 0 + x, 0 + y - this.noise() / 4, global.draw_scale, global.draw_scale);
+            this.ctx.drawImage(global.spirtesheet, 0 * global.raw_scale, 0 * global.raw_scale, global.raw_scale, global.raw_scale, 0 + x, 0 + y - this.noise() / 8, global.draw_scale, global.draw_scale);
         }
 
         this.draw_head = function (x, y) {
@@ -130,7 +128,7 @@ class Prisoner {
         }
 
         this.draw_hands = function (x, y) {
-            //    console.log(noise);
+            // 3 - l_hand
             this.ctx.drawImage(global.spirtesheet, 2 * global.raw_scale, 0 * global.raw_scale, global.raw_scale, global.raw_scale, 0 + x, 0 + y + this.noise(), global.draw_scale, global.draw_scale);
 
             // 3 - r_hand
@@ -139,7 +137,7 @@ class Prisoner {
         }
 
         this.draw_body = function (x, y) {
-            console.log(this.vx);
+            //            console.log(this.vx);
             global.ctx.save();
 
             if (this.isLeft) {
@@ -163,7 +161,7 @@ class Prisoner {
         }
 
         this.tick = function () {
-//            this.vx = this.vx.toFixed(4);
+            //            this.vx = this.vx.toFixed(4);
             this.move();
             global.ctx.resetTransform();
             this.draw_body();
