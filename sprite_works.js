@@ -13,13 +13,25 @@ https://stackoverflow.com/questions/2688961/how-do-i-tint-an-image-with-html5-ca
 let global = {
     raw_scale: 32,
     draw_scale: 512 / 2,
+    draw_scale: 64,
     ctx: undefined,
     canvas: undefined,
     spritesheet: undefined,
     skelement: undefined,
+    keydown: {
+        W: false,
+        A: false,
+        S: false,
+        D: false,
+        SPACE: false,
+        E: false,
+        Q: false,
+    }
 };
+const gl = global;
 
 let height = document.documentElement.clientHeight - 16;
+
 let width = document.documentElement.clientWidth - 16;
 var min_size = height < width ? height : width;
 
@@ -37,6 +49,7 @@ loadSpriteSheet();
 // draw the initial background:
 draw_gradient_top2bot('skyblue', 'white', 'green');
 
+var buffer = document.createElement("canvas").getContext("2d");
 // push characters to a dudes array.
 let dudes = [];
 dudes.push(new Prisoner(centerSCR.x, centerSCR.y, 'bob'));
@@ -81,6 +94,6 @@ setTimeout(function () {
         }
         global.framecount++;
 
-    }, 1000 / 30);
+    }, 1000 / 60);
 
 }, 500);

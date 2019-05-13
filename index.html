@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>sprite_works</title>
     <style>
         * {
             font-family: 'monospace';
         }
-        
+
         body {
             padding: 0;
             margin: 0;
             background: black;
         }
-        
+
         canvas {
             padding: 0;
             margin: 0;
             top: 0;
         }
+
+        * {
+            margin: 0;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background-color: #000000;
+            display: grid;
+            height: 100%;
+            width: 100%;
+        }
+
+        canvas {
+            align-self: center;
+            justify-self: center;
+        }
+
     </style>
 </head>
 
 <body>
-<!--    <span>-=[SPRITE_SKUNK_WORKS]=-</span>-->
+    <!--    <span>-=[SPRITE_SKUNK_WORKS]=-</span>-->
     <script src="Prisoner.js"></script>
-        <script src="controller.js"></script>
-    
+    <script src="controller.js"></script>
+
     <script src="canvas_functions.js"></script>
     <script src="skelement.js"></script>
     <script src="sprite_works.js"></script>
@@ -33,5 +58,5 @@
 
 
 </body>
-    
+
 </html>
